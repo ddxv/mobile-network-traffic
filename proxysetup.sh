@@ -1,9 +1,13 @@
 #!/bin/bash
+# User input
 port=$1
-local=$2
+local=$2 # local for mitm traffic running on same device, don't include to mitm a different device
+
+# hardcoded variables
 user="mitmproxyuser"
 location="/usr/share/mitm-data"
 
+# Check port is a port, arbitrary between 8000-9000
 if [ "$port" -gt "8000" ] && [ "$port" -lt "9000" ];
 then
     echo "Set ports 80, 443 to redirect to $port."
@@ -14,6 +18,7 @@ fi
 
 
 
+# Set forwarding and redirects
 sudo sysctl -w net.ipv4.ip_forward=1
 sudo sysctl -w net.ipv6.conf.all.forwarding=1
 sudo sysctl -w net.ipv4.conf.all.send_redirects=0
