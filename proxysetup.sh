@@ -2,6 +2,7 @@
 port=$1
 local=$2
 user="mitmproxyuser"
+location="/usr/share/mitm-data"
 
 if [ "$port" -gt "8000" ] && [ "$port" -lt "9000" ];
 then
@@ -32,7 +33,15 @@ then
     sudo iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner mitmproxyuser --dport 443 -j REDIRECT --to-port $port
     sudo ip6tables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner mitmproxyuser --dport 80 -j REDIRECT --to-port $port
     sudo ip6tables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner mitmproxyuser --dport 443 -j REDIRECT --to-port $port
-    sudo -u mitmproxyuser -H bash -c '/usr/bin/mitmproxy --mode transparent --showhost --set block_global=false'
+    
+    echo "Start and log traffic to $location/traffic.log";
+    sudo mkdir -p $location
+    sudo groupadd mitm-reports
+    sudo usermod -a -G mitm-reports $user
+    sudo chgrp -R mitm-reports $location
+    sudo chmod -R 2775 $location
+    
+    sudo -u mitmproxyuser -H bash -c '/usr/bin/mitmproxy --mode transparent --showhost --set block_global=false -w /usr/share/mitm-data/traffic.log'
 else
     echo "Setting all traffic from 8080. No local traffic."
     sudo iptables -t nat -A PREROUTING -i wlp0s20f3 -p tcp --dport 80 -j REDIRECT --to-port $port
@@ -42,3 +51,4 @@ else
 fi
 
 echo "Setting ports 80, 443 to redirect to $port. Finished"
+sudo iptables -t nat -F
