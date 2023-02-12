@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-.virtalenv/
+.virtualenv/
 .Python
 build/
 develop-eggs/
