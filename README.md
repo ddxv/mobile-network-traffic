@@ -4,7 +4,7 @@ Notes and how to for capturing HTTP traffic from mobile devices for security ana
 
 ## Setup
 
-- [Waydroid](https://docs.waydro.id/usage/install-on-desktops): Android Emulator for Linux 
+- [Waydroid](https://docs.waydro.id/usage/install-on-desktops): Android Emulator for Linux
 - [Waydroid Script](https://github.com/casualsnek/waydroid_script) Play services for using playstore and Google Play services
   - currently having issues: [Issue](https://github.com/casualsnek/waydroid_script/issues/68)
 
@@ -18,3 +18,5 @@ Notes and how to for capturing HTTP traffic from mobile devices for security ana
       1. Install certs:
       2. follow instructions on mitm.it after downloading eg: `mv mitmproxy-ca-cert.pem /usr/local/share/ca-certificates/mitmproxy.crt`
       3. NOTE: Firefox has SEPARTE certs from OS certs
+
+To flush all iptables in nat: `sudo iptables -t nat -F`
