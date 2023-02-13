@@ -46,6 +46,9 @@ then
     sudo chgrp -R mitm-reports $location
     sudo chmod -R 2775 $location
     
+    #export http_proxy=http://127.0.0.1:8080
+    #export https_proxy=https://127.0.0.1:8080
+    
     sudo -u mitmproxyuser -H bash -c '/usr/bin/mitmproxy --mode transparent --showhost --set block_global=false -w /usr/share/mitm-data/traffic.log'
 else
     echo "Setting all traffic from 8080. No local traffic."
