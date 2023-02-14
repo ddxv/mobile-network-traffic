@@ -18,11 +18,30 @@ fi
 
 
 
+# MITM virtualenv 
+source ~/mitmproxy/.virtualenv/bin/activate
+
+
 # Set forwarding and redirects
 sudo sysctl -w net.ipv4.ip_forward=1
 sudo sysctl -w net.ipv6.conf.all.forwarding=1
 sudo sysctl -w net.ipv4.conf.all.send_redirects=0
 
+
+#export http_proxy='http://127.0.0.1:8080'
+#export https_proxy='https://127.0.0.1:8080'
+
+#for those trying to create a mitmproxy to inspect traffic from android, after a long time I got it working without iptables stuff:
+#
+#1. set the localhost port 8080 as proxy for everything in your waydroid:
+#adb shell settings put global http_proxy 127.0.0.1:8080
+#
+#2. because the localhost from waydroid is different from the localhost of the host machine, you need to forward the ports (like "ssh -L"):
+#adb reverse tcp:8080 tcp:8080
+#
+
+#sudo waydroid shell settings put global http_proxy '127.0.0.1:8080'
+#sudo waydroid shell reverse tcp:8080 tcp:8080
 
 if [ "$local" = "-l" ]; # check if is local
 then
@@ -39,6 +58,7 @@ then
     sudo ip6tables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner mitmproxyuser --dport 80 -j REDIRECT --to-port $port
     sudo ip6tables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner mitmproxyuser --dport 443 -j REDIRECT --to-port $port
     
+    
     echo "Start and log traffic to $location/traffic.log";
     sudo mkdir -p $location
     sudo groupadd mitm-reports
@@ -46,17 +66,32 @@ then
     sudo chgrp -R mitm-reports $location
     sudo chmod -R 2775 $location
     
-    #export http_proxy=http://127.0.0.1:8080
-    #export https_proxy=https://127.0.0.1:8080
     
     sudo -u mitmproxyuser -H bash -c '/usr/bin/mitmproxy --mode transparent --showhost --set block_global=false -w /usr/share/mitm-data/traffic.log'
-else
-    echo "Setting all traffic from 8080. No local traffic."
-    sudo iptables -t nat -A PREROUTING -i wlp0s20f3 -p tcp --dport 80 -j REDIRECT --to-port $port
-    sudo iptables -t nat -A PREROUTING -i wlp0s20f3 -p tcp --dport 443 -j REDIRECT --to-port $port
+fi
+
+if [ "$local" = "-r" ]; # check if is via router
+then
+    echo "Setting all proxied router traffic for port 8080."
+    sudo iptables -t nat -A PREROUTING -i wlp0s20f3 -p udp --dport 80 -j REDIRECT --to-port $port
+    sudo iptables -t nat -A PREROUTING -i wlp0s20f3 -p udp --dport 443 -j REDIRECT --to-port $port
     sudo ip6tables -t nat -A PREROUTING -i wlp0s20f3 -p tcp --dport 80 -j REDIRECT --to-port $port
     sudo ip6tables -t nat -A PREROUTING -i wlp0s20f3 -p tcp --dport 443 -j REDIRECT --to-port $port
+    mitmproxy --mode transparent --showhost --set block_global=false -w ~/traffic.log
 fi
+
+if [ "$local" = "-w" ]; # check if is local waydroid vm, simple
+then
+    echo "Waydroid VM traffic routed to port 8080"
+    sudo iptables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 80 -j REDIRECT --to-port $port
+    sudo iptables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 443 -j REDIRECT --to-port $port
+    sudo ip6tables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 80 -j REDIRECT --to-port $port
+    sudo ip6tables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 443 -j REDIRECT --to-port $port
+
+
+    mitmproxy --mode transparent --showhost --set block_global=false -w ~/traffic.log
+fi
+
 
 echo "Setting ports 80, 443 to redirect to $port. Finished"
 sudo iptables -t nat -F
