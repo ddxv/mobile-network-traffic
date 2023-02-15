@@ -1,5 +1,20 @@
 # mobile-network-traffic
 
+Blog for getting around Google pinning using pentesting tools:
+https://blog.nviso.eu/2019/04/02/circumventing-ssl-pinning-in-obfuscated-apps-with-okhttp/
+https://github.com/sensepost/objection
+
+Added Magisk, lposed to install these:
+Magisk module, set user certificates as system:
+https://github.com/NVISOsecurity/MagiskTrustUserCerts
+
+lposed module, try to avoid SSL pinning:
+https://github.com/Xposed-Modules-Repo/io.github.tehcneko.sslunpinning
+
+Tried this comment:
+https://github.com/mitmproxy/mitmproxy/discussions/5266
+
+
 These are my notes as I try to find a reliable way to collect HTTPS traffic from mobile apps on my phone or VM. Still have some questions as to which works best. This is all very much just a WIP / notes, but feel free to add or use.
 
 ## Emulator vs Phone
