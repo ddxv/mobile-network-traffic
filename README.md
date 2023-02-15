@@ -1,5 +1,7 @@
 # mobile-network-traffic
 
+These are my notes as I try to find a reliable way to collect HTTPS traffic from mobile apps on my phone or VM. Still have some questions as to which works best. This is all very much just a WIP / notes, but feel free to add or use.
+
 ## Emulator vs Phone
 This is the first question and probably the most dependent on what you want to achieve. Working on a real device gives more space between your device and the proxy which makes things easier. The extra space is costly in other ways. For example, I would prefer to have a single instance running on the computer to collect information, but using a phone is easier but has the physical requirement of a device connected to the network.
 
