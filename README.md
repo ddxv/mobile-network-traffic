@@ -4,9 +4,9 @@ These are my notes as I try to find a reliable way to collect HTTPS traffic from
 
 =====================
 
-Notes and how to for capturing HTTP traffic from mobile devices for security analysis and advertising ops.
+## Waydroid VM & mitmproxy Setup Notes
 
-## VM & mitmproxy Setup Notes
+Waydroid and mitmproxy are the two main tools you will use. Waydroid is an emulator for Android on Linux and will need a variety of custom software installed in it to make it work.
 
 - [Waydroid](https://docs.waydro.id/usage/install-on-desktops): Android Emulator for Linux
 - [Waydroid Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/)
@@ -17,8 +17,9 @@ Notes and how to for capturing HTTP traffic from mobile devices for security ana
 
 1. [Waydroid Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/)
 2. Ensure iptables is working. I was able to solve this by explicitly add `/lib/x86_64-linux-gnu/xtables` to `/etc/ld.so.conf.d/x86_64-linux-gnu.conf` and rebooting. This was reported working for Debian 11 and Ubuntu 20+
-3. Run `./proxysetup.sh 8080 -s` for waydroid. Use `-l` if mitm for other device
-   1. NOTE: `proxysetup.sh` runs `sudo iptables -t nat -F` at end to clear out iptables. This is because some of the iptable settings depending on proxy type can cause your connection to be blocked. But be warned, this will clear all custom iptables on your nat table you may have added.
+3. Setup iptables. I put the necessary iptable additions into a script as I ran them quite often, and can sometimes pause your local or Waydroid connection and needed to be cleared after using. You can use this script or copy paste the code block below and adapt as needed.
+   1. Run `./proxysetup.sh 8080 -w` for waydroid. Use `-l` if mitm for other device
+      1. NOTE: `proxysetup.sh` runs `sudo iptables -t nat -F` at end to clear out iptables. This is because some of the iptable settings depending on proxy type can cause your connection to be blocked. But be warned, this will clear all custom iptables on your nat table you may have added.
    2. `proxysetup.sh` runs the following commands, so feel free to run them yourself:
 
          ```#!/bin/bash
@@ -29,26 +30,26 @@ Notes and how to for capturing HTTP traffic from mobile devices for security ana
          sudo sysctl -w net.ipv4.ip_forward=1
          sudo sysctl -w net.ipv6.conf.all.forwarding=1
          sudo sysctl -w net.ipv4.conf.all.send_redirects=0
-         mitmweb --mode transparent --showhost --set block_global=false -w ~/traffic.log
+         mitmweb --mode transparent --showhost --set block_global=false
          ```
 
    3. Start Waydroid service: `waydroid session start`
    4. Start Waydroid UI: `waydroid show-full-ui` and check internet
-   5. Inside Waydroid, if internet can't connect try `sudo waydroid shell` and check `ip link` and `ip addr` to see if firewall blocking.
-      1. More info at: [ArchWiki Waydroid Networking](https://wiki.archlinux.org/title/Waydroid#Network)
-   6. Install certs (first time per device) in waydroid
+      1. Inside Waydroid, if internet can't connect try `sudo waydroid shell` and check `ip link` and `ip addr` to see if firewall blocking. More info at: [ArchWiki Waydroid Networking](https://wiki.archlinux.org/title/Waydroid#Network)
+      2. To install GApps I used [CasualSnek's Waydroid Script Installer](https://github.com/casualsnek/waydroid_script)
+   5. Install certs (first time per device) in waydroid
       1. On target device, using a browser, navigate to `mitm.it`
       2. follow ALL instructions on mitm.it after downloading a cert file.
       3. NOTE: Firefox has SEPARTE certs from OS certs
-   7. In order to run two certificate tools (MagiskTrustUserCerts & SSLUnpinning) these framework tools installed into Waydroid
+   6. In order to run two certificate tools (MagiskTrustUserCerts & SSLUnpinning) these framework tools installed into Waydroid
       1. [Magisk](https://github.com/topjohnwu/Magisk) Magisk is a suite of open source software for customizing Android, supporting devices higher than Android 5.0.
          1. To install in waydroid I used [CasualSnek's Waydroid Script Installer](https://github.com/casualsnek/waydroid_script)
       2. [LSPosed](https://github.com/LSPosed/LSPosed) Zygisk module trying to provide an ART hooking framework which delivers consistent APIs with the OG Xposed, leveraging LSPlant hooking framework. We will use this to install SSLUnpinning in a future step.
          1. Installation of this is quite easy, but has a few steps, I found [this YouTube Video helpful to watch](https://www.youtube.com/watch?v=BT77z5HPZ6k)
-   8. Finally, we can install our two custom tools into Magisk & LSPosed respectively:
+   7. Finally, we can install our two custom tools into Magisk & LSPosed respectively:
       1. [MagiskTrustUserCerts](https://github.com/NVISOsecurity/MagiskTrustUserCerts) This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will trust.
       2. [SSLUnpinning](https://github.com/Xposed-Modules-Repo/io.github.tehcneko.sslunpinning) This LSPosed module helps to unpin apps during runtime.
-   9. Once everything is installed, shut down and open Waydroid and mitmproxy one more time. After this you should be able to see clear text HTTPS requests from your Waydroid VM.
+   8. Once everything is installed, shut down and open Waydroid and mitmproxy one more time. After this you should be able to see clear text HTTPS requests from your Waydroid VM.
 
 ========
 
