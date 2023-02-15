@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#vi
+*.swp
+
 # Distribution / packaging
 .virtualenv/
 .Python
