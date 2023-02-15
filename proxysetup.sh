@@ -89,7 +89,7 @@ then
     sudo ip6tables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 443 -j REDIRECT --to-port $port
 
 
-    mitmproxy --mode transparent --showhost --set block_global=false -w ~/traffic.log
+    mitmweb --mode transparent --showhost --set block_global=false -w ~/traffic.log
 fi
 
 
