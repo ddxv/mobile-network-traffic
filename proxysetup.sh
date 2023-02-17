@@ -7,6 +7,8 @@ local=$2 # local for mitm traffic running on same device, don't include to mitm 
 user="mitmproxyuser"
 location="/usr/share/mitm-data"
 
+
+
 # Check port is a port, arbitrary between 8000-9000
 if [ "$port" -gt "8000" ] && [ "$port" -lt "9000" ];
 then
@@ -28,20 +30,6 @@ sudo sysctl -w net.ipv6.conf.all.forwarding=1
 sudo sysctl -w net.ipv4.conf.all.send_redirects=0
 
 
-#export http_proxy='http://127.0.0.1:8080'
-#export https_proxy='https://127.0.0.1:8080'
-
-#for those trying to create a mitmproxy to inspect traffic from android, after a long time I got it working without iptables stuff:
-#
-#1. set the localhost port 8080 as proxy for everything in your waydroid:
-#adb shell settings put global http_proxy 127.0.0.1:8080
-#
-#2. because the localhost from waydroid is different from the localhost of the host machine, you need to forward the ports (like "ssh -L"):
-#adb reverse tcp:8080 tcp:8080
-#
-
-#sudo waydroid shell settings put global http_proxy '127.0.0.1:8080'
-#sudo waydroid shell reverse tcp:8080 tcp:8080
 
 if [ "$local" = "-l" ]; # check if is local
 then
