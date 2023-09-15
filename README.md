@@ -15,7 +15,7 @@ Waydroid and mitmproxy are the two main tools you will use. Waydroid is an emula
 
 ## Inital Waydroid & MITM Installation
 
-1. [Waydroid Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/)
+1. [Waydroid Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/) Note: For Ubuntu you'll need to use Wayland as well.
 2. Ensure iptables is working. I was able to solve this by explicitly add `/lib/x86_64-linux-gnu/xtables` to `/etc/ld.so.conf.d/x86_64-linux-gnu.conf` and rebooting. This was reported working for Debian 11 and Ubuntu 20+
 3. Setup iptables. I put the necessary iptable additions into a script as I ran them quite often, and can sometimes pause your local or Waydroid connection and needed to be cleared after using. You can use this script or copy paste the code block below and adapt as needed.
    1. Run `./proxysetup.sh 8080 -w` for waydroid. Use `-l` if mitm for other device
