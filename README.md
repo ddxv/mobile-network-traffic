@@ -13,7 +13,7 @@ I am doing the project again from Scratch as I heard Android API 34 may have som
    1. To install Magisk in Waydroid, I used CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) helped to do the installation of Magisk into Waydroid
       1. After following CasualSnek's installation into it's own environment run: `sudo venv/bin/python3 main.py install magisk`
    2. Once Magisk is installed I enabled Zygisk in the Magisk settings menu, then restarted Wayrdoid
-4. Using Magisk, install [MagiskTrustUserCerts](https://github.com/NVISOsecurity/MagiskTrustUserCerts) 
+4. Using Magisk, install [MagiskTrustUserCerts](https://github.com/NVISOsecurity/MagiskTrustUserCerts)
    1. This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will trust.
 5. For SSL Unpinning we will install [LSPosed](https://github.com/LSPosed/LSPosed) in Magisk.
    1. As of 2023-09 there appear to be issues with the LSPosed manager app. After installing in Magisk I still did not see the app, so extracted `manager.apk` from the zip file used to install LSPosed.
@@ -46,7 +46,6 @@ I am doing the project again from Scratch as I heard Android API 34 may have som
 5. While mitm is running, open `https://127.0.0.1:8081/`
 6. Check that the proxy is working: Open Waydroid > Browser > and navigate to `http://mitm.it` (note: no https here). This is the a setup page for installing certificate. We don't need to do anything here as we will be installing certificates in later steps. The certificates here do not generally work for what we would like to do.
 7. Open your Browser at 8081 and ensure you see the traffic from Waydroid > `http://mitm.it`.
-
 
 ## Other Tools
 
