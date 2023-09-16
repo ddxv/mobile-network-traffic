@@ -11,7 +11,9 @@ I am doing the project again from Scratch as I heard Android API 34 may have som
 2. Use Waydroid to install GAPPS after first launch
 3. Install [Magisk](https://github.com/topjohnwu/Magisk) a suite of open source software for customizing Android, supporting devices higher than Android 5.0.
    1. To install Magisk in Waydroid, I used CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) helped to do the installation of Magisk into Waydroid
-      1. After following CasualSnek's installation into it's own environment run: `sudo venv/bin/python3 main.py install magisk`
+      1. After following CasualSnek's installation into it's own environment run:
+         1. `sudo venv/bin/python3 main.py install magisk`
+         2. `sudo venv/bin/python3 main.py install libndk` (optional for x86) not related to Magisk, but this will be used later to install ARM APKs which are easier to find than x86 APKs
    2. Once Magisk is installed I enabled Zygisk in the Magisk settings menu, then restarted Wayrdoid
 4. Using Magisk, install [MagiskTrustUserCerts](https://github.com/NVISOsecurity/MagiskTrustUserCerts)
    1. This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will trust.
