@@ -1,7 +1,7 @@
 
 # 2023-09: How to Sniff Mobile HTTPs from Apps
 
-I am doing the project again from Scratch as I heard Android API 34 may have some changes that impact this flow. I'll be making new notes here. To see the old notes during this time, scroll down to "2023-02 How to Sniff Mobile HTTPs from Apps" below.
+I am doing the project again from Scratch as I heard some things may have changed for this flow. To see the previous notes you can check `/old-docs/`.
 
 ## Waydroid Setup
 
