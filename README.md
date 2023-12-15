@@ -21,7 +21,6 @@ Want to see how to do a Man in the Middle attack to see your devices encrypted H
    1. As of 2023-09 there appear to be issues with the LSPosed manager app. After installing in Magisk I still did not see the app, so extracted `manager.apk` from the zip file used to install LSPosed.
    2. Installation of this is quite easy, but has a few steps, I found [this YouTube Video helpful to watch](https://www.youtube.com/watch?v=BT77z5HPZ6k)
 6. Finally we can install our SSL Unpinning tool [tehcneko.sslunpinning](https://github.com/Xposed-Modules-Repo/io.github.tehcneko.sslunpinning) This LSPosed module helps to unpin apps during runtime.
-7. Once everything is installed, shut down and open Waydroid and mitmproxy one more time. After this you should be able to see clear text HTTPS requests from your Waydroid VM inside MITM.
 
 ## MITM Setup
 
@@ -46,8 +45,10 @@ Want to see how to do a Man in the Middle attack to see your devices encrypted H
          ```
 
 5. While mitm is running, open `https://127.0.0.1:8081/`
-6. Check that the proxy is working: Open Waydroid > Browser > and navigate to `http://mitm.it` (note: no https here). This is the a setup page for installing certificate. We don't need to do anything here as we will be installing certificates in later steps. The certificates here do not generally work for what we would like to do.
-7. Open your Browser at 8081 and ensure you see the traffic from Waydroid > `http://mitm.it`.
+6. Check that the proxy is working: Open Waydroid > Browser > and navigate to `http://mitm.it` (note: no https here). This is the a setup page for installing certificate. We don't need to do anything here as we will be installing certificates via Magisk/Lsposed modules. The certificates from mitm do not generally work for what we would like to do.
+7. Open your Browser at 8081 and ensure you see the HTTP (not HTTPS) traffic from Waydroid > `http://mitm.it`.
+
+Once everything is installed, shut down and open Waydroid and mitmproxy one more time. After this you should be able to see clear text HTTPS requests from your Waydroid VM inside MITM.
 
 ## Checking traffic
 
