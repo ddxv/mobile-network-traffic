@@ -1,7 +1,7 @@
 
 # 2023-09: How to Sniff Mobile HTTPs from Apps
 
-I am doing the project again from Scratch as I heard Android API 34 may have some changes that impact this flow. I'll be making new notes here. To see the old notes during this time, scroll down to "2023-02 How to Sniff Mobile HTTPs from Apps" below.
+I am doing the project again from Scratch as I heard some things may have changed for this flow. To see the previous notes you can check `/old-docs/`.
 
 ## Waydroid Setup
 
@@ -28,8 +28,8 @@ I am doing the project again from Scratch as I heard Android API 34 may have som
 [Install MITM from GitHub](https://github.com/mitmproxy/mitmproxy/blob/main/CONTRIBUTING.md)
 
 1. Clone repo to ~/mitmproxy
-2. Setup your virtual env: ~/mitmproxy/venv
-   1. if needed change location in proxysetup.sh
+2. Setup your virtual env: `python3.11 -m venv ~/mobile-network-traffic/mitm-env`
+   1. if needed change location in proxysetup.sh & tmuxlauncher.sh
 3. Setup mitm's virtual environment: `pip install -e "[.dev]"`
 4. Setup [MITM Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/). These steps, including a launch step, are inside `proxysetup.sh`, so from inside your mitm Python environment, run `proxysetup.sh 8080 -w`.
    1. `proxysetup.sh` runs the following commands, so feel free to run them yourself:
