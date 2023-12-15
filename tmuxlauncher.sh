@@ -1,5 +1,4 @@
 #!/bin/bash
-port=$1
 session="proxysession"
 
 sudo systemctl stop waydroid-container.service
@@ -38,7 +37,8 @@ if [ "$dolaunchsess" = true ]; then
     tmux send-keys -t $session "waydroid session start" Enter
     # Top Right
     tmux split-window -h -t $session
-    tmux send-keys -t $session "./proxysetup.sh $port -w" Enter
+    tmux send-keys -t $session "source ~/mobile-network-traffic/mitm-env/bin/activate" Enter
+    tmux send-keys -t $session "./proxysetup.sh -w" Enter
     #tmux split-window -v -p 50 -t $session
     # Bottom Right
     #tmux send-keys -t $session "hiii" Enter
