@@ -1,7 +1,7 @@
 
-# 2023-09: How to Sniff Mobile HTTPs from Apps
+# 2023: How to Sniff Mobile HTTPs from Apps
 
-I am doing the project again from Scratch as I heard some things may have changed for this flow. To see the previous notes you can check `/old-docs/`.
+Want to see how to do a Man in the Middle attack to see your devices encrypted HTTPS outgoing requests and their responses? This flow is for troubleshooting mobile advertising and checking the security of apps on your phone. To see the previous notes you can check `/old-docs/`.
 
 ## Waydroid Setup
 
@@ -48,6 +48,13 @@ I am doing the project again from Scratch as I heard some things may have change
 5. While mitm is running, open `https://127.0.0.1:8081/`
 6. Check that the proxy is working: Open Waydroid > Browser > and navigate to `http://mitm.it` (note: no https here). This is the a setup page for installing certificate. We don't need to do anything here as we will be installing certificates in later steps. The certificates here do not generally work for what we would like to do.
 7. Open your Browser at 8081 and ensure you see the traffic from Waydroid > `http://mitm.it`.
+
+## Checking traffic
+
+This part is easy simply open waydroid, install the target app and browse. Then open your local browser to see the traffic that was captured. A quick launch of the above tools once installed can be found with:
+`./proxysetup.sh -w`
+OR
+`./tmuxlauncher.sh`
 
 ## Other Tools
 
