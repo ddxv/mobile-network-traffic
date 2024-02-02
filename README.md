@@ -1,5 +1,5 @@
 
-# 2023: How to Sniff Mobile HTTPs from Apps
+# 2024: How to Sniff Mobile HTTPs from Apps
 
 Want to see how to do a Man in the Middle attack to see your devices encrypted HTTPS outgoing requests and their responses? This flow is for troubleshooting mobile advertising and checking the security of apps on your phone. To see the previous notes you can check `/old-docs/`.
 
