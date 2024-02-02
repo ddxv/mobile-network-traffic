@@ -6,6 +6,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# ruff
+.ruff_cache/
+
 # C extensions
 *.so
 

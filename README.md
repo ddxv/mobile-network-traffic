@@ -1,7 +1,7 @@
 
 # 2024: How to Sniff Mobile HTTPs from Apps
 
-Want to see how to do a Man in the Middle attack to see your devices encrypted HTTPS outgoing requests and their responses? This flow is for troubleshooting mobile advertising and checking the security of apps on your phone. To see the previous notes you can check `/old-docs/`.
+This README is a recipe for setting up a man in the middle attack to see your emulated device's encrypted HTTPS outgoing requests and their responses in clear text. This is useful for security, journalism and of course troubleshooting mobile advertising. To see previous notes you can check `/old-docs/`.
 
 ## Waydroid Setup
 
@@ -52,7 +52,7 @@ Once everything is installed, shut down and open Waydroid and mitmproxy one more
 
 ## Checking traffic
 
-This part is easy simply open waydroid, install the target app and browse. Then open your local browser to see the traffic that was captured. A quick launch of the above tools once installed can be found with:
+Open your local browser `http://127.0.0.1:8081/#/flows` and then on waydroid open the target app to see live traffic. A quick launch of the above tools once installed can be found with:
 `./proxysetup.sh -w`
 OR
 `./tmuxlauncher.sh`
