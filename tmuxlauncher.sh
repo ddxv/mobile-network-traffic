@@ -1,4 +1,16 @@
 #!/bin/bash
+
+# while getopts s: option; do
+#     case $option in
+#         s) # Enter a store_id
+#         app=$OPTARG ;;
+#         \?) # Invalid option
+#             echo "Error: Invalid option"
+#             exit
+#         ;;
+#     esac
+# done
+
 session="proxysession"
 
 sudo systemctl stop waydroid-container.service

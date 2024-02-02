@@ -1,0 +1,18 @@
+lint.select = ["ALL"]
+
+target-version = 'py311'
+
+lint.ignore = [
+    "E501",   # line length
+    "W291",   # trailing space at end of line
+    "G",      # Ignore pyflake logging as it does not like f-strings in log messages.
+    "RET504", # Unnecessary assignment to variable before return, but I prefer for readability.
+    "T201",   # Allow prints
+    "D211",   # Suppress warning about internal ruff conflict
+    "D213",   # Suppress warning about internal ruff conflict
+]
+
+lint.unfixable = ["B"]
+
+[lint.per-file-ignores]
+"postbacks.py" = ["PLR0913"]

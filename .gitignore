@@ -1,7 +1,13 @@
+# Downloaded APKs
+apks/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# ruff
+.ruff_cache/
 
 # C extensions
 *.so
