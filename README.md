@@ -29,7 +29,7 @@ This README is a recipe for setting up a man in the middle attack to see your em
 1. Clone repo to ~/mitmproxy
 2. Setup your virtual env: `python3.11 -m venv ~/mobile-network-traffic/mitm-env`
    1. if needed change location in proxysetup.sh & tmuxlauncher.sh
-3. Setup mitm's virtual environment: `pip install -e "[.dev]"`
+3. Setup mitm's virtual environment: `pip install -e ".[dev]"`
 4. Setup [MITM Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/). These steps, including a launch step, are inside `proxysetup.sh`, so from inside your mitm Python environment, run `proxysetup.sh 8080 -w`.
    1. `proxysetup.sh` runs the following commands, so feel free to run them yourself:
 
