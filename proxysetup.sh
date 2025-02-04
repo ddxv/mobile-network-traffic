@@ -2,8 +2,11 @@
 # User input
 local=$1 # local for mitm traffic running on same device, don't include to mitm a different device
 
+
 # MITM virtualenv
+if [ -d "mitm-env" ]; then
 source mitm-env/bin/activate
+fi
 
 # Setup based on: https://docs.mitmproxy.org/stable/howto-transparent/
 

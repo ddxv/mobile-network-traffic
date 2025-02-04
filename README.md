@@ -7,29 +7,89 @@ This README is a recipe for setting up a man in the middle attack to see your em
 
 [Waydroid](https://docs.waydro.id/usage/install-on-desktops): Android Emulator for Linux
 
-1. Install Waydroid (launch in Wayland for Ubuntu)
-2. Use Waydroid to install GAPPS after first launch
+1. Install Waydroid (requires Wayland)
+2. Launch Waydroid and select to install GAPPS
+
+### Waydroid doesn't open (after already having been opened earlier)
+Sometimes Just `sudo systemctl restart waydroid-container.service` works but other times I need to do the full:
+```sh
+sudo waydroid session stop
+sudo waydroid container stop
+sudo systemctl stop waydroid-container.service
+sudo systemctl start waydroid-container.service
+```
+
+### Waydroid has no internet connection
+
+#### Firewall
+Allow Waydroid through firewall https://docs.waydro.id/debugging/networking-issues
+
+#### Interaction with pre-existing Docker network interface
+Interaction with an existing docker network, might need to delete or remove docker0 https://wiki.archlinux.org/title/Waydroid
+
+#### Issues with Waydroid on Fedora nftables
+https://github.com/waydroid/waydroid/issues/509
+`/usr/lib/waydroid/data/scripts/waydroid-net.sh`
+```sh
+LXC_USE_NFT="false"
+```
+
+
+## Install Magisk
 3. Install [Magisk](https://github.com/topjohnwu/Magisk) a suite of open source software for customizing Android, supporting devices higher than Android 5.0.
-   1. To install Magisk in Waydroid, I used CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) helped to do the installation of Magisk into Waydroid
+   1. To install Magisk in Waydroid, I used CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) helped to do the installation of Magisk into Waydroid. As of 2024 this still works but the project has not been updated. For Python3 I used Python3.12.
       1. After following CasualSnek's installation into it's own environment run:
          1. `sudo venv/bin/python3 main.py install magisk`
-         2. `sudo venv/bin/python3 main.py install libndk` (optional for x86) not related to Magisk, but this will be used later to install ARM APKs which are easier to find than x86 APKs
-   2. Once Magisk is installed I enabled Zygisk in the Magisk settings menu, then restarted Wayrdoid
-4. Using Magisk, install [MagiskTrustUserCerts](https://github.com/NVISOsecurity/MagiskTrustUserCerts)
-   1. This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will trust.
-5. For SSL Unpinning we will install [LSPosed](https://github.com/LSPosed/LSPosed) in Magisk.
-   1. As of 2023-09 there appear to be issues with the LSPosed manager app. After installing in Magisk I still did not see the app, so extracted `manager.apk` from the zip file used to install LSPosed.
-   2. Installation of this is quite easy, but has a few steps, I found [this YouTube Video helpful to watch](https://www.youtube.com/watch?v=BT77z5HPZ6k)
-6. Finally we can install our SSL Unpinning tool [tehcneko.sslunpinning](https://github.com/Xposed-Modules-Repo/io.github.tehcneko.sslunpinning) This LSPosed module helps to unpin apps during runtime.
+         2. `sudo venv/bin/python3 main.py install libndk` (for x86 machines) not related to Magisk, but this will be used later to install ARM APKs which are easier to find than x86 APKs
+   2. Once Magisk is installed enable Zygisk in the Magisk settings menu
+   3. Restart Waydoid
+
+## Install Magisk Modules
+For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. I prefer the Firefox one, the default browser feels nearly impossible to use on Waydroid emulated on a computer.
+
+To install Firefox get an APK (xAPK does not work) and install in waydroid ie:
+```sh
+waydroid app install ./Downloads/justdownloadedfirefox.apk
+```
+### Steps
+1. Open Magisk
+2. Press Modules
+3. Select Install from Storage > Select the .zip file you downloaded above
+
+### Magisk Modules
+1. [MagiskTrustUserCerts](https://github.com/NVISOsecurity/MagiskTrustUserCerts) This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will then trust.
+2. For SSL Unpinning we install modules via [LSPosed](https://github.com/JingMatrix/LSPosed). Note: updated in 2025 to use [a community recommended upto date fork](https://xdaforums.com/t/what-version-of-xposed-should-i-install-or-are-they-all-dead.4716584/).
+   1. Download LSPosed zip and installing via Magisk
+   2. Reboot
+   3. After reboot, click notification to open LSPosed (once opened you can add a shortcut to apps if desired)
+
+## Install LSPosed Modules
+
+[Try new SSL Killer](https://github.com/Xposed-Modules-Repo/com.simo.ssl.killer)
+1. Download APK & install
+2. Enable in LSPosed (grants access to XPosed APIs)
+3. Enable Root in Magisk
+
+Way I used last time:
+Finally we can install our SSL Unpinning tool [tehcneko.sslunpinning](https://github.com/Xposed-Modules-Repo/io.github.tehcneko.sslunpinning) This LSPosed module helps to unpin apps during runtime.
 
 ## MITM Setup
 
-[Install MITM from GitHub](https://github.com/mitmproxy/mitmproxy/blob/main/CONTRIBUTING.md)
+[Download MITM Binary](https://mitmproxy.org/) or [Install MITM from Source/GitHub](https://github.com/mitmproxy/mitmproxy/blob/main/CONTRIBUTING.md)
 
+### From source
 1. Clone repo to ~/mitmproxy
 2. Setup your virtual env: `python3.11 -m venv ~/mobile-network-traffic/mitm-env`
    1. if needed change location in proxysetup.sh & tmuxlauncher.sh
 3. Setup mitm's virtual environment: `pip install -e ".[dev]"`
+
+
+### From binary
+1. Download / Unzip
+2. Move files to `/usr/local/bin/` or other suitable place
+3. `chmod +x /usr/local/bin/mitmweb` and other files
+
+### Setup Transparent Proxy
 4. Setup [MITM Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/). These steps, including a launch step, are inside `proxysetup.sh`, so from inside your mitm Python environment, run `proxysetup.sh 8080 -w`.
    1. `proxysetup.sh` runs the following commands, so feel free to run them yourself:
 
