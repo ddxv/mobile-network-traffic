@@ -40,7 +40,6 @@ linecount=$(echo "$waydroidinstalledapps" | grep -c "packageName: $app" || true)
 # echo "Line count " "$linecount" " and lines " "$lines"
 if [ "$linecount" = 0 ]; then
 	echo "store_id: $app not yet installed"
-	source mitm-env/bin/activate
 	python download_apk.py -s "$app"
 	echo "store_id: $app installing"
 	waydroid app install "apks/$app.apk"
@@ -48,3 +47,7 @@ else
 	lines=$(echo "$waydroidinstalledapps" | grep "packageName: $app")
 	echo "Matches $linecount already installed apps: $lines"
 fi
+
+
+
+

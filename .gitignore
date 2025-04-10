@@ -1,5 +1,8 @@
 # Downloaded APKs
 apks/
+myunzip/
+
+APKEditor.jar
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

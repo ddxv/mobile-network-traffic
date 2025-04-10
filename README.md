@@ -1,5 +1,5 @@
 
-# 2024: How to Sniff Mobile HTTPs from Apps
+# 2025: How to Sniff Mobile HTTPs from Apps
 
 This README is a recipe for setting up a man in the middle attack to see your emulated device's encrypted HTTPS outgoing requests and their responses in clear text. This is useful for security, journalism and of course troubleshooting mobile advertising. To see previous notes you can check `/old-docs/`.
 
@@ -8,7 +8,10 @@ This README is a recipe for setting up a man in the middle attack to see your em
 [Waydroid](https://docs.waydro.id/usage/install-on-desktops): Android Emulator for Linux
 
 1. Install Waydroid (requires Wayland)
-2. Launch Waydroid and select to install GAPPS
+2. Launch Waydroid and select to install GAPPS by setting these values:
+  - System OTA: https://ota.waydro.id/system
+  - Vendor OTA: https://ota.waydro.id/vendor
+
 
 ### Waydroid doesn't open (after already having been opened earlier)
 Sometimes Just `sudo systemctl restart waydroid-container.service` works but other times I need to do the full:
@@ -34,44 +37,41 @@ https://github.com/waydroid/waydroid/issues/509
 LXC_USE_NFT="false"
 ```
 
-
 ## Install Magisk
-3. Install [Magisk](https://github.com/topjohnwu/Magisk) a suite of open source software for customizing Android, supporting devices higher than Android 5.0.
-   1. To install Magisk in Waydroid, I used CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) helped to do the installation of Magisk into Waydroid. As of 2024 this still works but the project has not been updated. For Python3 I used Python3.12.
-      1. After following CasualSnek's installation into it's own environment run:
-         1. `sudo venv/bin/python3 main.py install magisk`
-         2. `sudo venv/bin/python3 main.py install libndk` (for x86 machines) not related to Magisk, but this will be used later to install ARM APKs which are easier to find than x86 APKs
-   2. Once Magisk is installed enable Zygisk in the Magisk settings menu
-   3. Restart Waydoid
 
-## Install Magisk Modules
+While in the past few years I had been using CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) in 2025 I was having quite a few issues with this. Specifically I couldn't seem to reliably set the Zygisk option in Magisk.
+
+So looking around on the Waydroid Telegram I found [mistrmochov/magiskWaydroid](https://github.com/mistrmochov/magiskWaydroid) which seems to have oneshotted my issue by just following the install instructions:
+```sh
+git clone https://github.com/mistrmochov/magiskWaydroid
+cd magiskWaydroid
+./magisk install --modules # This option will install Magisk with lsposed and magisk builtinbusybox modules
+```
+
+The awesome thing about mistrmochov is that it installs lsposed as well, which is a later requirment anyways.
+
+## Install Magisk Modules (optional)
 For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. I prefer the Firefox one, the default browser feels nearly impossible to use on Waydroid emulated on a computer.
 
 To install Firefox get an APK (xAPK does not work) and install in waydroid ie:
 ```sh
 waydroid app install ./Downloads/justdownloadedfirefox.apk
 ```
-### Steps
-1. Open Magisk
-2. Press Modules
-3. Select Install from Storage > Select the .zip file you downloaded above
+
 
 ### Magisk Modules
-1. [MagiskTrustUserCerts](https://github.com/NVISOsecurity/MagiskTrustUserCerts) This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will then trust.
-2. For SSL Unpinning we install modules via [LSPosed](https://github.com/JingMatrix/LSPosed). Note: updated in 2025 to use [a community recommended upto date fork](https://xdaforums.com/t/what-version-of-xposed-should-i-install-or-are-they-all-dead.4716584/).
+1. Open Magisk
+2. Press Modules
+3. Select Install from Storage > Select the .zip file you download
+
+1. [pwnlogs/cert-fixer](https://github.com/pwnlogs/cert-fixer) Another new option, this replaced the previous NVISOsecurity/MagiskTrustUserCerts module which I couldn't get working this year. This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will then trust.
+
+2. [JingMatrix/LSPosed](https://github.com/JingMatrix/LSPosed). Already Done if using the mistrmochov script above. Note: updated in 2025 to use [a community recommended upto date fork](https://xdaforums.com/t/what-version-of-xposed-should-i-install-or-are-they-all-dead.4716584/).
    1. Download LSPosed zip and installing via Magisk
    2. Reboot
    3. After reboot, click notification to open LSPosed (once opened you can add a shortcut to apps if desired)
 
-## Install LSPosed Modules
 
-[Try new SSL Killer](https://github.com/Xposed-Modules-Repo/com.simo.ssl.killer)
-1. Download APK & install
-2. Enable in LSPosed (grants access to XPosed APIs)
-3. Enable Root in Magisk
-
-Way I used last time:
-Finally we can install our SSL Unpinning tool [tehcneko.sslunpinning](https://github.com/Xposed-Modules-Repo/io.github.tehcneko.sslunpinning) This LSPosed module helps to unpin apps during runtime.
 
 ## MITM Setup
 
@@ -93,7 +93,8 @@ Finally we can install our SSL Unpinning tool [tehcneko.sslunpinning](https://gi
 4. Setup [MITM Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/). These steps, including a launch step, are inside `proxysetup.sh`, so from inside your mitm Python environment, run `proxysetup.sh 8080 -w`.
    1. `proxysetup.sh` runs the following commands, so feel free to run them yourself:
 
-         ```#!/bin/bash
+         ```sh
+         #!/bin/bash
          sudo iptables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 80 -j REDIRECT --to-port $port
          sudo iptables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 443 -j REDIRECT --to-port $port
          sudo ip6tables -t nat -A PREROUTING -i waydroid0 -p tcp --dport 80 -j REDIRECT --to-port $port
@@ -105,10 +106,18 @@ Finally we can install our SSL Unpinning tool [tehcneko.sslunpinning](https://gi
          ```
 
 5. While mitm is running, open `https://127.0.0.1:8081/`
+
 6. Check that the proxy is working: Open Waydroid > Browser > and navigate to `http://mitm.it` (note: no https here). This is the a setup page for installing certificate. We don't need to do anything here as we will be installing certificates via Magisk/Lsposed modules. The certificates from mitm do not generally work for what we would like to do.
+
 7. Open your Browser at 8081 and ensure you see the HTTP (not HTTPS) traffic from Waydroid > `http://mitm.it`.
 
 Once everything is installed, shut down and open Waydroid and mitmproxy one more time. After this you should be able to see clear text HTTPS requests from your Waydroid VM inside MITM.
+
+### Finally, start MITM
+If not yet started, start via:
+`proxysetup.sh -w` OR `mitmweb --mode transparent --showhost --set block_global=false`
+
+
 
 ## Checking traffic
 
@@ -117,57 +126,57 @@ Open your local browser `http://127.0.0.1:8081/#/flows` and then on waydroid ope
 OR
 `./tmuxlauncher.sh`
 
-## Other Tools
 
-## Emulator vs Phone
 
-This is the first question and probably the most dependent on what you want to achieve. Working on a real device gives more space between your device and the proxy which makes things easier. The extra space is costly in other ways. For example, I would prefer to have a single instance running on the computer to collect information, but using a phone is easier but has the physical requirement of a device connected to the network.
+## Play Certification
 
-## Phone
+Unfortunately, Google continues to make it difficult to see the data leaving your device. The newest issue is that Google now requires your device to be signed by a manufacturer, which for Waydroid definitely is difficult. This seems like it's getting tied to Google services, so many apps now will show an error if you do not have Play Certification. 
 
-Physical separation allows for clearer testing. Fully functional device means your input and output work as expected.
+There is a flow to fix this, but I struggled to get it working, as it takes a fair amount of time to be successful, has a captcha and needs to be done all over if you stop the Waydroid Container.
 
-## Emulator - Waydroid
+https://docs.waydro.id/faq/google-play-certification
 
-Emulator running on the same computer causes more complicated networking to ensure you don't block your own traffic. Troubleshooting is trickier as it's more difficult to easily access parts of the emulator that a phone is easy to access. For example, I spent much more time than I would have expected to move a VPN configuration file from my computer to the virtual machine emulator than I would have ever expected. Adding the same configuration to the phone was a simple QR code scan.
+    Run `sudo waydroid shell`
 
-Emulator running in a virtual machine allows for a future use case of running the whole thing in the cloud without a physical device.
+    Inside the shell run this command:
+      ```
+      ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"
+      ```
 
-## Proxies
 
-As far as I know, the only way to capture the HTTPS traffic is to use a proxy. This is in the form of an application running on a separate (virtual or physical as mentioned above) device. The hardest part here is the Certificate Authority which signs the HTTPS traffic when it leaves the app. More sophisticated apps, to prevent fraud, do a variety of actions to prevent the user or 3rd parties from capturing the data in each HTTPS request.
 
-## mitmproxy
 
-### open source, [link]('https://github.com/mitmproxy/mitmproxy/')
+## OTHER OPTIONS:
 
-I tried this first as it comes with Python library which would make capturing data for later analysis much easier. Mitmproxy has a few different modes, and ultimately I found that `mitmproxy --mode wireguard` which runs via VPN captured a good amount of traffic, but still had target SDK traffic unable to be opened. Mitmproxy has a built in tool to help installing the certificate in Android as a user certificate. This will capture some HTTPs traffic, but for some apps and many SDKs this does not capture their traffic. Traffic can be captured in several ways: CLI tool for analysis of live traffic in memory, CLI dump to file and in memory live in browser of choice.
+https://github.com/mitmproxy/android-unpinner This looks great, creates an unpinned APK but can't work in waydroid?
 
-## Charles Proxy
 
-### free for 30 days, shareware, [link]('https://www.charlesproxy.com/')
+
+### Charles Proxy
+
+free for 30 days, shareware, [link]('https://www.charlesproxy.com/')
 
 I first used Charles nearly 10 years ago, and it doesn't feel like it's changed much, but is actively maintained. When I first started using Charles it was a breeze to use, CA was less of a problem. But as Android changed it also now has the problems of CA needing to be installed, and helps the user by providing it's own signed certificate which can be installed as a user certificate. Charles is a standalone program that you run and as such it does have a fair amount of issues on my linux environment related to it's display sizes.
 
-## Burp Suite - Community Edition
+### Burp Suite - Community Edition
 
-### paid/free, [link]('https://portswigger.net/burp/communitydownload')
+paid/free, [link]('https://portswigger.net/burp/communitydownload')
 
 Community edition that is free to use. Runs in browser and comes with it's own CA tool.
 
-## Android Certificate Authority
+### Android Certificate Authority
 
 These are the certificates used to sign HTTPS traffic to keep it secure. In Android there are three levels: User, System (root) and App Pinned Certificates. In Android settings you can add a CA which will be considered "user". Apps can choose whether to ignore this certificate. System CAs can only be set by a root user. While a user can install user CA's, apps do not have to use these. CAs can be set by users as root certificates. I believe this must be set regardless of device or VM. The majority of the certificates provided by the proxies don't seem to open a lot of HTTPS traffic. This is likely because Android N (API level 24) [certificate pinning]('https://developer.android.com/training/articles/security-config.html#CertificatePinning') was introduced in 2016 and at this point most SDKs and Apps use this for transferring traffic.
 
-## JustTrustMe
+### JustTrustMe
 
-### open source, [link]('https://github.com/Fuzion24/JustTrustMe')
+open source, [link]('https://github.com/Fuzion24/JustTrustMe')
 
 This is installed on a device or emulator. An Xposed addon that can be installed to force apps to use root authorities and prevent them from pinning their own CA.
 
-## apk-mitm
+### apk-mitm
 
-### open source, [link]('https://github.com/shroudedcode/apk-mitm')
+open source, [link]('https://github.com/shroudedcode/apk-mitm')
 
 This can be installed in a separate linux environment and is used to modify an app's apk before being installed into a VM emultator or phone. It attempts to get around the app's certificate pinning by patching the APK to disable certificate pinning.
 

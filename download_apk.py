@@ -8,6 +8,7 @@ This script scrapes https://apkpure.com to get the apk download link
 
 import argparse
 import pathlib
+import os
 
 import requests
 
@@ -25,25 +26,49 @@ def check_apk_dir_created() -> None:
             pathlib.Path.mkdir(_dir, exist_ok=True)
 
 
-def download(store_id: str) -> None:
+
+def download(store_id: str, do_redownload: bool = False) -> str:
     """Download the apk file.
 
     store_id: str the id of the android apk
 
     """
+
+    check_apk_dir_created()
+    filepath = pathlib.Path(APKS_DIR, f"{store_id}.apk")
+    exists = filepath.exists()
+    if exists:
+        if not do_redownload:
+            return filepath.suffix
+
     r = requests.get(
         URL.format(store_id=store_id),
         headers={
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.5 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.5 ",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0",
         },
         stream=True,
         timeout=10,
     )
-    filepath = pathlib.Path(APKS_DIR, f"{store_id}.apk")
-    with filepath.open("wb") as file:
-        for chunk in r.iter_content(chunk_size=1024):
-            if chunk:
-                file.write(chunk)
+    if r.status_code == 200:
+        extension = ".apk"  # default fallback
+
+        content_disposition = r.headers.get("Content-Disposition", "")
+        if "filename=" in content_disposition:
+            filename = content_disposition.split("filename=")[-1].strip("\"'")
+            ext = pathlib.Path(filename).suffix
+            if ext:
+                extension = ext
+
+        filepath = pathlib.Path(APKS_DIR, f"{store_id}{extension}")
+
+        with filepath.open("wb") as file:
+            for chunk in r.iter_content(chunk_size=1024 * 1024):
+                if chunk:
+                    file.write(chunk)
+    else:
+        raise requests.exceptions.HTTPError
+    return extension
+
 
 
 def main(args: argparse.Namespace) -> None:
@@ -55,9 +80,19 @@ def main(args: argparse.Namespace) -> None:
     exists = filepath.exists()
     if exists:
         print(f"apk already exists {filepath=}")
+        ext = 'apk'
     else:
         print(f"download from apkpure {store_id=}")
-        download(store_id=store_id)
+        ext = download(store_id=store_id)
+    if ext == '.xapk':
+        os.system(f"unzip Downloads/{store_id}{ext} -d myunzip")
+        # output is myunzip_merged.apk
+        os.system("java -jar APKEditor.jar m -i myunzip/")
+        os.system("mv myunzip_merged.apk apks/{store_id}.apk")
+    else:
+        pass
+
+
 
 
 def parse_args() -> argparse.Namespace:
@@ -73,6 +108,11 @@ def parse_args() -> argparse.Namespace:
     )
     args, leftovers = parser.parse_known_args()
     return args
+
+
+
+
+
 
 
 if __name__ == "__main__":
