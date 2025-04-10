@@ -66,6 +66,7 @@ def download(store_id: str, do_redownload: bool = False) -> str:
                 if chunk:
                     file.write(chunk)
     else:
+        print(f"status code: {r.status_code} {r.text[0:25]}")
         raise requests.exceptions.HTTPError
     return extension
 
@@ -85,10 +86,12 @@ def main(args: argparse.Namespace) -> None:
         print(f"download from apkpure {store_id=}")
         ext = download(store_id=store_id)
     if ext == '.xapk':
-        os.system(f"unzip Downloads/{store_id}{ext} -d myunzip")
+        os.system(f"unzip apks/{store_id}{ext} -d myunzip")
         # output is myunzip_merged.apk
+        os.system('rm -rf myunzip/*')
         os.system("java -jar APKEditor.jar m -i myunzip/")
-        os.system("mv myunzip_merged.apk apks/{store_id}.apk")
+        os.system(f"mv myunzip_merged.apk apks/{store_id}.apk")
+        os.system('rm -rf myunzip/*')
     else:
         pass
 
