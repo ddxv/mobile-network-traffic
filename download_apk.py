@@ -94,7 +94,6 @@ def main(args: argparse.Namespace) -> None:
 
 
 
-
 def parse_args() -> argparse.Namespace:
     """Check passed args.
 
