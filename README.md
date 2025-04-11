@@ -1,4 +1,3 @@
-
 # 2025: How to Sniff Mobile HTTPs from Apps
 
 This README is a recipe for setting up a man in the middle attack to see your emulated device's encrypted HTTPS outgoing requests and their responses in clear text. This is useful for security, journalism and of course troubleshooting mobile advertising. To see previous notes you can check `/old-docs/`.

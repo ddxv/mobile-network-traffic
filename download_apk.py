@@ -86,12 +86,9 @@ def main(args: argparse.Namespace) -> None:
         print(f"download from apkpure {store_id=}")
         ext = download(store_id=store_id)
     if ext == '.xapk':
-        os.system(f"unzip apks/{store_id}{ext} -d myunzip")
-        # output is myunzip_merged.apk
-        os.system('rm -rf myunzip/*')
-        os.system("java -jar APKEditor.jar m -i myunzip/")
-        os.system(f"mv myunzip_merged.apk apks/{store_id}.apk")
-        os.system('rm -rf myunzip/*')
+        # output is apks/com.example_merged.apk
+        os.system("java -jar APKEditor.jar m -i apks/{store_id}.xapk")
+        os.system(f"mv apks/{store_id}_merged.apk apks/{store_id}.apk")
     else:
         pass
 
