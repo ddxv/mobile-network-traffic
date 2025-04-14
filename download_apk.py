@@ -15,6 +15,7 @@ import requests
 URL = "https://d.apkpure.net/b/APK/{store_id}?version=latest"
 MODULE_DIR = pathlib.Path(__file__).resolve().parent
 APKS_DIR = pathlib.Path(MODULE_DIR, "apks")
+ANDROID_SDK = pathlib.Path("~/Android/Sdk/build-tools/35.0.0")
 
 
 def check_apk_dir_created() -> None:
@@ -26,21 +27,24 @@ def check_apk_dir_created() -> None:
             pathlib.Path.mkdir(_dir, exist_ok=True)
 
 
+def check_dirs_and_file_exists(store_id:str, do_redownload:bool = False)->str|None:
+    apk_filepath = pathlib.Path(APKS_DIR, f"{store_id}.apk")
+    xapk_filepath = pathlib.Path(APKS_DIR, f"{store_id}.xapk")
+    exists = apk_filepath.exists()
+    xapk_exists = xapk_filepath.exists()
+    if exists:
+        if not do_redownload:
+            return apk_filepath.suffix
+    if xapk_exists:
+        if not do_redownload:
+            return xapk_filepath.suffix
 
-def download(store_id: str, do_redownload: bool = False) -> str:
+def download(store_id: str) -> str:
     """Download the apk file.
 
     store_id: str the id of the android apk
 
     """
-
-    check_apk_dir_created()
-    filepath = pathlib.Path(APKS_DIR, f"{store_id}.apk")
-    exists = filepath.exists()
-    if exists:
-        if not do_redownload:
-            return filepath.suffix
-
     r = requests.get(
         URL.format(store_id=store_id),
         headers={
@@ -59,9 +63,9 @@ def download(store_id: str, do_redownload: bool = False) -> str:
             if ext:
                 extension = ext
 
-        filepath = pathlib.Path(APKS_DIR, f"{store_id}{extension}")
+        apk_filepath = pathlib.Path(APKS_DIR, f"{store_id}{extension}")
 
-        with filepath.open("wb") as file:
+        with apk_filepath.open("wb") as file:
             for chunk in r.iter_content(chunk_size=1024 * 1024):
                 if chunk:
                     file.write(chunk)
@@ -74,21 +78,21 @@ def download(store_id: str, do_redownload: bool = False) -> str:
 
 def main(args: argparse.Namespace) -> None:
     """Download APK to local directory and exit."""
-    check_apk_dir_created()
     store_id = args.store_id
     print(f"Start download {store_id}")
-    filepath = pathlib.Path(APKS_DIR, f"{store_id}.apk")
-    exists = filepath.exists()
-    if exists:
-        print(f"apk already exists {filepath=}")
-        ext = 'apk'
+    ext = check_dirs_and_file_exists(store_id)
+    if ext:
+        print(f"apk already exists {ext=}")
     else:
-        print(f"download from apkpure {store_id=}")
         ext = download(store_id=store_id)
     if ext == '.xapk':
+        pass
         # output is apks/com.example_merged.apk
-        os.system("java -jar APKEditor.jar m -i apks/{store_id}.xapk")
-        os.system(f"mv apks/{store_id}_merged.apk apks/{store_id}.apk")
+        os.system(f"java -jar APKEditor.jar m -i apks/{store_id}.xapk")
+        # APKEditor merged APKs must be signed to install
+        apk_path = pathlib.Path(APKS_DIR, f"{store_id}.apk")
+        merged_apk_path = pathlib.Path(APKS_DIR, f"{store_id}_merged.apk")
+        os.system(f"{ANDROID_SDK}/apksigner sign --ks ~/.android/debug.keystore  --ks-key-alias androiddebugkey   --ks-pass pass:android   --key-pass pass:android   --out {apk_path}  {merged_apk_path}")
     else:
         pass
 

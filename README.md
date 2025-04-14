@@ -36,6 +36,18 @@ https://github.com/waydroid/waydroid/issues/509
 LXC_USE_NFT="false"
 ```
 
+#### Waydroid no internet because MITM is not running
+This only applies if you've already run `./proxysetup.sh` or set the `iptable` forwarding rules. Once you set this, waydroid0 is forwarding all traffic to your local 8080 `mitm-proxy` port. If you want waydroid internet without running mitm you can delete the rules forwarding waydroid traffic to mitm. Of course, when you want to see traffic in mitm, you'll need to set these rules again with `./proxysetup.sh`
+```sh
+# IPv4 rules
+sudo iptables -t nat -D PREROUTING -i waydroid0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+sudo iptables -t nat -D PREROUTING -i waydroid0 -p tcp --dport 443 -j REDIRECT --to-port 8080
+
+# IPv6 rules
+sudo ip6tables -t nat -D PREROUTING -i waydroid0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+sudo ip6tables -t nat -D PREROUTING -i waydroid0 -p tcp --dport 443 -j REDIRECT --to-port 8080
+```
+
 ## Install Magisk
 
 While in the past few years I had been using CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) in 2025 I was having quite a few issues with this. Specifically I couldn't seem to reliably set the Zygisk option in Magisk.
@@ -49,27 +61,22 @@ cd magiskWaydroid
 
 The awesome thing about mistrmochov is that it installs lsposed as well, which is a later requirment anyways.
 
-## Install Magisk Modules (optional)
-For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. I prefer the Firefox one, the default browser feels nearly impossible to use on Waydroid emulated on a computer.
+## Install Magisk Modules
+For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. I prefer the Firefox one, the default browser feels too difficult to use on Waydroid emulated on a computer.
 
-To install Firefox get an APK (xAPK does not work) and install in waydroid ie:
+To install Firefox get an APK:
 ```sh
 waydroid app install ./Downloads/justdownloadedfirefox.apk
 ```
 
 
-### Magisk Modules
-1. Open Magisk
-2. Press Modules
-3. Select Install from Storage > Select the .zip file you download
+### Magisk Module(s)
+1. Visit URL in your waydroid browser, download .zip from releases
+2. Open Magisk
+3. Press Modules
+4. Select Install from Storage > Select the .zip file you download
 
 1. [pwnlogs/cert-fixer](https://github.com/pwnlogs/cert-fixer) Another new option, this replaced the previous NVISOsecurity/MagiskTrustUserCerts module which I couldn't get working this year. This Magisk module will take your user CA certs and move them to system or 'root' CA certifications which more apps will then trust.
-
-2. [JingMatrix/LSPosed](https://github.com/JingMatrix/LSPosed). Already Done if using the mistrmochov script above. Note: updated in 2025 to use [a community recommended upto date fork](https://xdaforums.com/t/what-version-of-xposed-should-i-install-or-are-they-all-dead.4716584/).
-   1. Download LSPosed zip and installing via Magisk
-   2. Reboot
-   3. After reboot, click notification to open LSPosed (once opened you can add a shortcut to apps if desired)
-
 
 
 ## MITM Setup
