@@ -65,7 +65,8 @@ cd magiskWaydroid
 The awesome thing about mistrmochov is that it installs lsposed as well, which is a later requirment anyways.
 
 ## Install Magisk Modules
-For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. I prefer the Firefox one, the default browser feels too difficult to use on Waydroid emulated on a computer.
+For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. 
+Recommended use Firefox one, the default browser seems to default downloading `.zip` to an empty `.bin` from GitHub repos. Also it's quite difficult to use.
 
 To install Firefox get an APK:
 ```sh
