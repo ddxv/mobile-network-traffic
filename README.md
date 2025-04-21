@@ -95,9 +95,10 @@ waydroid app install ./Downloads/justdownloadedfirefox.apk
 
 
 ### From binary
-1. Download / Unzip
-2. Move files to `/usr/local/bin/` or other suitable place
-3. `chmod +x /usr/local/bin/mitmweb` and other files
+1. Download
+2. Unzip: `tar -xf archive.tar.gz`
+3. Move files to `mv mitmweb mitmdump mitmproxy /usr/local/bin/` or other suitable place
+4. `chmod +x /usr/local/bin/mitmweb` and other files
 
 ### Setup Transparent Proxy
 4. Setup [MITM Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/). These steps, including a launch step, are inside `proxysetup.sh`, so from inside your mitm Python environment, run `proxysetup.sh 8080 -w`.
