@@ -34,9 +34,11 @@ def check_dirs_and_file_exists(store_id:str, do_redownload:bool = False)->str|No
     xapk_exists = xapk_filepath.exists()
     if exists:
         if not do_redownload:
+            print(f"{apk_filepath=} Exists")
             return apk_filepath.suffix
     if xapk_exists:
         if not do_redownload:
+            print(f"{xapk_filepath=} Exists")
             return xapk_filepath.suffix
 
 def download(store_id: str) -> str:
@@ -79,7 +81,7 @@ def download(store_id: str) -> str:
 def main(args: argparse.Namespace) -> None:
     """Download APK to local directory and exit."""
     store_id = args.store_id
-    print(f"Start download {store_id}")
+    print(f"Start getting APK for {store_id}")
     ext = check_dirs_and_file_exists(store_id)
     if ext:
         print(f"apk already exists {ext=}")
@@ -95,6 +97,8 @@ def main(args: argparse.Namespace) -> None:
         os.system(f"{ANDROID_SDK}/apksigner sign --ks ~/.android/debug.keystore  --ks-key-alias androiddebugkey   --ks-pass pass:android   --key-pass pass:android   --out {apk_path}  {merged_apk_path}")
     else:
         pass
+    print(f"Finished getting APK for {store_id}")
+    
 
 
 
