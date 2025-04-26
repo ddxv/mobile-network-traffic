@@ -6,8 +6,11 @@ This README is a recipe for setting up a man in the middle attack to see your em
 
 [Waydroid](https://docs.waydro.id/usage/install-on-desktops): Android Emulator for Linux
 
+
+
 1. Install Waydroid (requires Wayland)
-2. Launch Waydroid and select to install GAPPS by setting these values:
+2. Init: `waydroid init -s GAPPS`
+3. Launch Waydroid and select to install GAPPS by setting these values:
   - System OTA: https://ota.waydro.id/system
   - Vendor OTA: https://ota.waydro.id/vendor
 
@@ -79,7 +82,8 @@ cd magiskWaydroid
 The awesome thing about mistrmochov is that it installs lsposed as well, which is a later requirment anyways.
 
 ## Install Magisk Modules
-For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. I prefer the Firefox one, the default browser feels too difficult to use on Waydroid emulated on a computer.
+For each Module you'll need to get the .zip file from the GitHub Releases page onto waydroid, for example, using a browser. 
+Recommended use Firefox one, the default browser seems to default downloading `.zip` to an empty `.bin` from GitHub repos. Also it's quite difficult to use.
 
 To install Firefox get an APK:
 ```sh
@@ -108,9 +112,10 @@ waydroid app install ./Downloads/justdownloadedfirefox.apk
 
 
 ### From binary
-1. Download / Unzip
-2. Move files to `/usr/local/bin/` or other suitable place
-3. `chmod +x /usr/local/bin/mitmweb` and other files
+1. Download
+2. Unzip: `tar -xf archive.tar.gz`
+3. Move files to `mv mitmweb mitmdump mitmproxy /usr/local/bin/` or other suitable place
+4. `chmod +x /usr/local/bin/mitmweb` and other files
 
 ### Setup Transparent Proxy
 4. Setup [MITM Transparent Proxy](https://docs.mitmproxy.org/stable/howto-transparent/). These steps, including a launch step, are inside `proxysetup.sh`, so from inside your mitm Python environment, run `proxysetup.sh 8080 -w`.
