@@ -11,6 +11,23 @@ This README is a recipe for setting up a man in the middle attack to see your em
   - System OTA: https://ota.waydro.id/system
   - Vendor OTA: https://ota.waydro.id/vendor
 
+### Troubleshooting Waydroid
+
+First, you can see the errors by:
+```sh
+sudo waydroid shell
+#now inside waydroid shell
+logcat
+```
+
+To install the errors you can 
+
+### Installing APK (install fails with no message)
+
+This is likely caused by Waydroid running on x86 like AMD or Intel CPU. Use CasualSnek's [Waydroid Script](https://github.com/casualsnek/waydroid_script) helped to do the installation of Magisk into Waydroid
+      1. After following CasualSnek's installation into it's own environment run:
+        2. `sudo venv/bin/python3 main.py install libndk`  - Native Android libraries
+        2. `sudo venv/bin/python3 main.py install libhoudini`  - ARM translation layer
 
 ### Waydroid doesn't open (after already having been opened earlier)
 Sometimes Just `sudo systemctl restart waydroid-container.service` works but other times I need to do the full:
