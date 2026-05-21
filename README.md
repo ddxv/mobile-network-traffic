@@ -16,6 +16,8 @@ This README is a recipe for setting up a man in the middle attack to see your em
 
 ### Troubleshooting Waydroid
 
+Ubuntu may require pulseaudio and weston if running headless.
+
 First, you can see the errors by:
 ```sh
 sudo waydroid shell
